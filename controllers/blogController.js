@@ -66,3 +66,27 @@ export const updatePost = async (req, res) => {
   // return res.status(200).json({ data: data });
   res.json({ message: "Request successfully", data: blogs[id] });
 };
+export const getPost = (req, res) => {
+  const { id } = req.params;
+  const blogs = storage.all();
+  const data = blogs[id];
+  if (!data) {
+    res.status(404).json({ message: "Blog not found", error: true });
+  }
+
+  res.status(200).json({ message: "Request successfully", data: data });
+};
+
+export const deletePost = (req, res) => {
+  const { id } = req.params;
+  const blogs = Object.values(storage.all());
+
+  const index = blogs.findIndex((blog) => blog.id === id);
+
+  if (index === -1) {
+    return res.status(404).json({ message: "Blog not found", error: true });
+  }
+  blogs.splice(index, 1);
+  storage.save(JSON.stringify(blogs));
+  return res.status(200).json({ message: "request completed" });
+};
