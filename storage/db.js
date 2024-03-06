@@ -5,7 +5,6 @@ const db = async () => {
     process.env.MODE === "PRODUCTION"
       ? process.env.DB_URL_PRODUCTION
       : process.env.DB_URL_DEVELOPMENT;
-  console.log(url);
   await mongoose.connect(url);
 };
 

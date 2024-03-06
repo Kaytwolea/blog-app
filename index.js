@@ -4,6 +4,7 @@ import { Blogrouter } from "./routes/blog.js";
 import FileStorage from "./storage/FileStorage.js";
 import db from "./storage/db.js";
 import { configDotenv } from "dotenv";
+import cors from "cors";
 
 configDotenv();
 
@@ -14,6 +15,7 @@ export const storage = new FileStorage();
 storage.reload();
 
 app.use(express.json());
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.raw());
 
