@@ -3,6 +3,9 @@ import bodyParser from "body-parser";
 import { Blogrouter } from "./routes/blog.js";
 import FileStorage from "./storage/FileStorage.js";
 import db from "./storage/db.js";
+import { configDotenv } from "dotenv";
+
+configDotenv();
 
 const app = express();
 const PORT = 6060;

@@ -1,2 +1,3 @@
 blog_file
-/node-modules
+/node_modules
+.env

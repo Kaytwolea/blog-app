@@ -1,7 +1,12 @@
 import mongoose from "mongoose";
 
 const db = async () => {
-  await mongoose.connect("mongodb://127.0.0.1:27017/myblog");
+  const url =
+    process.env.MODE === "PRODUCTION"
+      ? process.env.DB_URL_PRODUCTION
+      : process.env.DB_URL_DEVELOPMENT;
+  console.log(url);
+  await mongoose.connect(url);
 };
 
 export default db;
