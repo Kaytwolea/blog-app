@@ -79,14 +79,9 @@ export const getPost = (req, res) => {
 
 export const deletePost = (req, res) => {
   const { id } = req.params;
-  const blogs = Object.values(storage.all());
+  const blogs = storage.all();
 
-  const index = blogs.findIndex((blog) => blog.id === id);
-
-  if (index === -1) {
-    return res.status(404).json({ message: "Blog not found", error: true });
-  }
-  blogs.splice(index, 1);
-  storage.save(JSON.stringify(blogs));
+  delete blogs[id];
+  storage.save(blogs);
   return res.status(200).json({ message: "request completed" });
 };
