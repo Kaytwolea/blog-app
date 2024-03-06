@@ -1,12 +1,18 @@
 import { v4 as uuidv4 } from "uuid";
 import { storage } from "../index.js";
 import { query, check, body, validationResult } from "express-validator";
+import Blog from "../model/blog.js";
 
 export const getBlog = async (req, res) => {
-  const data = Object.values(storage.all());
-  return res
-    .status(200)
-    .json({ message: "Request successful", data: data, error: false });
+  // const data = Object.values(storage.all());
+  try {
+    const blogs = await Blog.find();
+    return res
+      .status(200)
+      .json({ message: "Request successful", data: blogs, error: false });
+  } catch (e) {
+    res.status(500).json({ message: "Internal server error", error: true });
+  }
 };
 
 export const addBlog = async (req, res) => {
@@ -22,18 +28,15 @@ export const addBlog = async (req, res) => {
       return res.status(400).json({ errors: errorMessages });
     }
     const { title, content } = req.body;
-    const blog = {
-      id: uuidv4(),
-      title,
-      content,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    storage.save(blog);
-    return res
-      .status(200)
-      .json({ message: "Saved successfully", data: blog, error: false });
+    const result = await Blog.create({ title, content });
+    if (!result) {
+      res.status(500).json({ message: "Error creating blog", error: true });
+    }
+    res.status(201).json({
+      message: "Blog created successfully",
+      error: false,
+      data: result,
+    });
   } catch (e) {
     return res.status(400).json({ message: "Error saving blog", error: true });
   }
@@ -52,24 +55,23 @@ export const updatePost = async (req, res) => {
     return res.status(400).json({ errors: errorMessages });
   }
   const { id, content, title } = req.body;
-  const blogs = storage.all();
-
-  const data = blogs[id];
-  if (!data) {
-    res.status(404).json({ message: "Blog not found", error: true });
+  try {
+    const blog = await Blog.findOne({ _id: id });
+    if (title) blog.title = title;
+    if (content) blog.content = content;
+    await blog.save();
+    res
+      .status(200)
+      .json({ message: "Request successfully", data: blog, error: false });
+  } catch (err) {
+    res.status(500).json({ message: "Request unsuccessfully", error: false });
   }
-
-  data.title = title;
-  data.content = content;
-  data.updatedAt = new Date();
-  storage.save(data);
-  // return res.status(200).json({ data: data });
-  res.json({ message: "Request successfully", data: blogs[id] });
 };
-export const getPost = (req, res) => {
+export const getPost = async (req, res) => {
   const { id } = req.params;
-  const blogs = storage.all();
-  const data = blogs[id];
+  if (!id) res.status(400).json({ message: "Id not passed" });
+
+  const data = await Blog.findOne({ _id: id });
   if (!data) {
     res.status(404).json({ message: "Blog not found", error: true });
   }
@@ -77,11 +79,21 @@ export const getPost = (req, res) => {
   res.status(200).json({ message: "Request successfully", data: data });
 };
 
-export const deletePost = (req, res) => {
+export const deletePost = async (req, res) => {
   const { id } = req.params;
-  const blogs = storage.all();
-
-  delete blogs[id];
-  storage.save(blogs);
-  return res.status(200).json({ message: "request completed" });
+  if (!id) res.status(400).json({ message: "Id not passed" });
+  try {
+    const count = await Blog.countDocuments({ _id: id });
+    if (count === 0) {
+      return res
+        .status(404)
+        .json({ message: "Blog post already deleted", error: true });
+    }
+    const data = await Blog.findOne({ _id: id });
+    if (!data) {
+      res.status(404).json({ message: "Cannot Delete Blog", error: true });
+    }
+    await data.deleteOne({ _id: id });
+    return res.status(200).json({ message: "Request Successfull" });
+  } catch (e) {}
 };

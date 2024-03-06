@@ -1,26 +1,20 @@
-import { FileStorage } from "./FileStorage";
+import mongoose from "mongoose";
+// import { required } from "nodemon/lib/config";
 
-class Blog {
-  static id = 1;
-  constructor(title, content) {
-    this.title = title;
-    this.content = content;
-    this.id = id++;
-  }
-  create(title, content) {
-    return new Blog(title, content);
-  }
-  serialize() {
-    return JSON.stringify({
-      id: this.id,
-      title: this.title,
-      content: this.content,
-    });
-  }
-}
+const blogSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    content: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
 
-const blog = new Blog(title, content);
+const Blog = mongoose.model("Blog", blogSchema);
 
-const storage = new FileStorage();
-let newblog = blog.create("kaytwolea", "mine");
-let save = storage.save(newblog);
+export default Blog;
