@@ -5,6 +5,7 @@ import FileStorage from "./storage/FileStorage.js";
 import db from "./storage/db.js";
 import { configDotenv } from "dotenv";
 import cors from "cors";
+import { AuthRouter } from "./routes/auth.js";
 
 configDotenv();
 
@@ -24,6 +25,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api", Blogrouter);
+app.use("/api/auth", AuthRouter);
 
 db()
   .then(() => {

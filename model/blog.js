@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-// import { required } from "nodemon/lib/config";
+
+const { ObjectId } = mongoose.Types;
 
 const blogSchema = new mongoose.Schema(
   {
@@ -9,6 +10,11 @@ const blogSchema = new mongoose.Schema(
     },
     content: {
       type: String,
+      required: true,
+    },
+    user: {
+      type: ObjectId,
+      ref: "User",
       required: true,
     },
   },

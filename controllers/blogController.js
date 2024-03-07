@@ -16,6 +16,7 @@ export const getBlog = async (req, res) => {
 };
 
 export const addBlog = async (req, res) => {
+  const id = req.id;
   try {
     const validator = [
       body("title").notEmpty().withMessage("Title is required").isString(),
@@ -28,7 +29,7 @@ export const addBlog = async (req, res) => {
       return res.status(400).json({ errors: errorMessages });
     }
     const { title, content } = req.body;
-    const result = await Blog.create({ title, content });
+    const result = await Blog.create({ title, content, user: id });
     if (!result) {
       res.status(500).json({ message: "Error creating blog", error: true });
     }
@@ -38,6 +39,7 @@ export const addBlog = async (req, res) => {
       data: result,
     });
   } catch (e) {
+    console.log(e);
     return res.status(400).json({ message: "Error saving blog", error: true });
   }
 };

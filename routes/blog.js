@@ -6,14 +6,19 @@ import {
   getPost,
   updatePost,
 } from "../controllers/blogController.js";
+import { verifyAuth } from "../middleware/verifyJwt.js";
 
 const app = express();
 
 const router = express.Router();
 
-router.route("/").get(getBlog).post(addBlog).patch(updatePost);
-router.route("/:id").get(getPost);
-router.route("/:id").delete(deletePost);
+router
+  .route("/")
+  .get(verifyAuth, getBlog)
+  .post(verifyAuth, addBlog)
+  .patch(verifyAuth, updatePost);
+router.route("/:id").get(verifyAuth, getPost);
+router.route("/:id").delete(verifyAuth, deletePost);
 // router.post('/add-blog', addBlog)
 
 export { router as Blogrouter };
