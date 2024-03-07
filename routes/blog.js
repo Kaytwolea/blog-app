@@ -14,7 +14,7 @@ const router = express.Router();
 
 router
   .route("/")
-  .get(verifyAuth, getBlog)
+  .get(getBlog)
   .post(verifyAuth, addBlog)
   .patch(verifyAuth, updatePost);
 router.route("/:id").get(verifyAuth, getPost);
